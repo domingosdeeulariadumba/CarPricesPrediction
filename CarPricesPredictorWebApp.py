@@ -67,33 +67,35 @@ def predict_car_price(age: int, make: str, transmission: str, condition: int, od
 
 # Setting up the interface of the web app
 
-    ## Inputs
+  # Inputs
+    # Convert int64 to int
+age_min = int(df_prep.age.min())
+age_max = int(df_prep.age.max())
+condition_min = int(df_prep.condition.min())
+condition_max = int(df_prep.condition.max())
 
-age = gr.Number(label = 'Age', minimum = df_prep.age.min(), maximum = df_prep.age.max(),)
-make = gr.Dropdown(label = 'Make', choices = list(set(df_prep.make)))
-transmission = gr.Dropdown(label = 'Transmission', choices = list(set(df_prep.transmission))) 
-condition = gr.Slider(label = 'Condition', minimum = df_prep.condition.min(), maximum = df_prep.condition.max(), step = 1, interactive = True) 
-odometer = gr.Number(label = 'Odometer')
-color = gr.Dropdown(label = 'Color', choices = list(set(df_prep.color)))
-interior = gr.Dropdown(label = 'Interior Color', choices = list(set(df_prep.interior)))
-mmr = gr.Number(label = 'Manheim Market Report')
+age = gr.Number(label='Age', minimum=age_min, maximum=age_max)
+make = gr.Dropdown(label='Make', choices=list(set(df_prep.make)))
+transmission = gr.Dropdown(label='Transmission', choices=list(set(df_prep.transmission)))
+condition = gr.Slider(label='Condition', minimum=condition_min, maximum=condition_max, step=1, interactive=True)
+odometer = gr.Number(label='Odometer')
+color = gr.Dropdown(label='Color', choices=list(set(df_prep.color)))
+interior = gr.Dropdown(label='Interior Color', choices=list(set(df_prep.interior)))
+mmr = gr.Number(label='Manheim Market Report')
 
-    ## Outputs
-
-sellingprice = gr.Number(label = 'Selling Price')
-
+# Outputs
+sellingprice = gr.Number(label='Selling Price')
 
 # Assigning the gradio interface labels of the web application
-
-# Assigning the gradio interface labels of the web application
-
-car_prices_predictor = gr.Interface(fn = predict_car_price, 
-                       description = 'Welcome to this price selling predictor. Please, fill the fields below accordingly!', 
-                       inputs = [age, make, transmission, condition, odometer, color, interior, mmr], 
-                       outputs = sellingprice, title = 'Car Selling Price Predictor', allow_flagging = 'auto', 
-                       theme = 'soft')
-
+car_prices_predictor = gr.Interface(
+    fn=predict_car_price,
+    description='Welcome to this price selling predictor. Please, fill the fields below accordingly!',
+    inputs=[age, make, transmission, condition, odometer, color, interior, mmr],
+    outputs=sellingprice,
+    title='Car Selling Price Predictor',
+    allow_flagging='auto',
+    theme='soft'
+)
 
 # Launching the web application for making predictions
-
 car_prices_predictor.launch(server_port=7860)
