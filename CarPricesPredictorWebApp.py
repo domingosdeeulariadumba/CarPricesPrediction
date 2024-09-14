@@ -15,7 +15,7 @@ import gradio as gr
 
 # File containing the preprocessed dataset
 
-path =  'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main/car_prices_train.csv'
+path =  'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
 
 file = '/car_prices_train.csv'
 
