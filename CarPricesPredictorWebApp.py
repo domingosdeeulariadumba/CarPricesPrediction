@@ -41,7 +41,7 @@ def predict_car_price(age: int, make: str, transmission: str, condition: int, od
     
     # Importing the model serialized with joblib
     
-    model = jbl.load(path + 'car_prices_ml.joblib')
+    model = jbl.load(path + '/car_prices_ml.joblib')
 
     
     # Atributtes used to fit the model
@@ -104,4 +104,4 @@ car_prices_predictor = gr.Interface(fn = predict_car_price,
 
 # Launching the web application for making predictions
 
-car_prices_predictor.launch(server_name='0.0.0.0', server_port=int(os.getenv('PORT', 7860)))
+car_prices_predictor.launch(server_port = 7860)
