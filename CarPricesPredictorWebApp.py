@@ -98,7 +98,7 @@ sellingprice = gr.Number(label = 'Selling Price')
 # Assigning the gradio interface labels of the web application
 
 car_prices_predictor = gr.Interface(fn = predict_car_price, 
-                       description = 'Welcome to this price selling predictor. Please, fill the fields below accordingly!', 
+                       description = 'Welcome to this selling price predictor. Please, fill the fields below accordingly!', 
                        inputs = [age, make, transmission, condition, odometer, color, interior, mmr], 
                        outputs = sellingprice, title = 'Car Selling Price Predictor', allow_flagging = 'auto', 
                        theme = 'soft')
