@@ -80,7 +80,7 @@ unique_transmission = list(set(df_prep.transmission))
 unique_color = list(set(df_prep.color))
 unique_interior = list(set(df_prep.interior))
 
-age = gr.Number(label = 'Age', minimum = age_min, maximum = age_max)
+age = gr.Number(label = 'Age', value = age_min)
 make = gr.Dropdown(label = 'Make', choices = unique_makes)
 transmission = gr.Dropdown(label = 'Transmission', choices = unique_transmission)
 condition = gr.Slider(label = 'Condition', minimum = condition_min, maximum = condition_max, step = 1, interactive = True)
