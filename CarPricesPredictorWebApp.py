@@ -104,7 +104,7 @@ car_prices_predictor = gr.Interface(fn=predict_car_price,
 
 # Function to launch Gradio in a separate thread
 def launch_gradio():
-    car_prices_predictor.launch(server_name = '0.0.0.0', server_port = 80)
+    car_prices_predictor.launch(server_name = '0.0.0.0')
 
 # Launching both Flask and Gradio
 if __name__ == '__main__':
