@@ -89,7 +89,7 @@ mode_color = df_prep.color.value_counts().index[0]
 mode_make = df_prep.make.value_counts().index[0]
 mode_transmission = df_prep.transmission.value_counts().index[0]
 mode_interior = df_prep.interior.value_counts().index[0]
-mean_mmr = df_prep.mmr.mean()
+mean_mmr = round(df_prep.mmr.mean(), 2)
 
     # Filling the field values
 year = gr.Number(label = 'Year', minimum = 1885,
@@ -118,7 +118,7 @@ mmr = gr.Number(label = 'Manheim Market Report', value = mean_mmr,
 
 # Outputs
 
-sellingprice = gr.Number(label='Selling Price')
+sellingprice = gr.Number(label = 'Selling Price')
 
 
 # Assigning the Gradio interface labels of the web application
