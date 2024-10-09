@@ -1,0 +1,29 @@
+name: Push Flagged Data
+
+on:
+  schedule:
+    - cron: '* * * * *'  # To run this action every minute
+  workflow_dispatch:  # Allowing manual trigger from the GitHub UI
+
+jobs:
+  push_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Copy flagged data
+        run: |
+          mkdir -p flags
+          # Assuming the flags directory is in the root of your Render app
+          cp -r path/to/your/render/app/flags/* flags/
+
+      - name: Commit flagged data
+        run: |
+          git config --local user.name "Domingos de Eulária Dumba"
+          git config --local user.email "domingosdeeulariadumba@gmail.com"
+          git add flags/*
+          git commit -m "Update flagged data" || echo "No changes to commit"
+
+      - name: Push changes
+        run: git push origin main
