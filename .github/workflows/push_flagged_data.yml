@@ -14,9 +14,8 @@ jobs:
 
       - name: Copy flagged data
         run: |
-          mkdir -p flags
-          # Assuming the flags directory is in the root of your Render app
-          cp -r path/to/your/render/app/flags/* flags/
+          mkdir -p flags         
+          scp -i private_key -r deploy@carpricesprediction.onrender.com:~/flags/* flags/ || echo "No flagged data to copy."
 
       - name: Commit flagged data
         run: |
