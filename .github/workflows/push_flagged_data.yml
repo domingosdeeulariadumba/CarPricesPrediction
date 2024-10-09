@@ -12,22 +12,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install jq
-        run: sudo apt-get install jq -y
-
-      - name: Fetch Flagged Data
+      - name: Copy flagged data via HTTP
         run: |
           mkdir -p flags
-          # Fetching the flagged data from the Flask API endpoint
+          # Fetching the flagged data from the Flask endpoint on Render
           flagged_files=$(curl -s https://carpricesprediction.onrender.com/flags | jq -r '.[]')
           
           if [ -n "$flagged_files" ]; then
               # Loop through each flagged file and download it
               for file in $flagged_files; do
-                  curl -s https://carpricesprediction.onrender.com/flags/$file -o flags/$file
+                  curl -s -o flags/$file https://carpricesprediction.onrender.com/flags/$file
               done
           else
-              echo "No flagged data to download."
+              echo "No flagged data to copy."
           fi
 
           # Merging flagged data into a single file
