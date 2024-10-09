@@ -1,66 +1,24 @@
-name: Push Flagged Data
+- name: Commit flagged data
+  run: |
+    git config --local user.name "Domingos de Eulária Dumba"
+    git config --local user.email "domingosdeeulariadumba@gmail.com"
+    
+    # Check if the flagged_data.csv file exists and is not empty
+    if [[ -s flags/flagged_data.csv ]]; then
+        git add flags/flagged_data.csv
+        if git commit -m "Update flagged data"; then
+            echo "Changes committed successfully."
+        else
+            echo "No changes to commit." || echo "Commit failed"
+        fi
+    else
+        echo "flagged_data.csv does not exist or is empty. No changes to commit."
+    fi
 
-on:
-  schedule:
-    - cron: '* * * * *'  # Running this action every minute
-  workflow_dispatch:  # Allowing manual trigger from the GitHub UI
-
-jobs:
-  push_data:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Copy flagged data via HTTP
-        run: |
-          set -e  # Exit immediately if a command exits with a non-zero status
-          mkdir -p flags
-          # Fetching the flagged data from the Flask endpoint on Render
-          flagged_files=$(curl -s https://carpricesprediction.onrender.com/flags | jq -r '.[]')
-          
-          echo "Flagged files: $flagged_files"
-          
-          if [ -n "$flagged_files" ]; then
-              # Loop through each flagged file and download it
-              for file in $flagged_files; do
-                  if curl -s -o "flags/$file" "https://carpricesprediction.onrender.com/flags/$file"; then
-                      echo "Downloaded: $file"
-                  else
-                      echo "Failed to download: $file" >&2
-                  fi
-              done
-          else
-              echo "No flagged data to copy."
-          fi
-
-          # Merging flagged data into a single file
-          if [ -f flags/flagged_data.csv ]; then
-              # Appending new data to the existing file
-              for file in flags/*.csv; do
-                  if [ "$file" != "flags/flagged_data.csv" ]; then
-                      cat "$file" >> flags/flagged_data.csv
-                      rm "$file"  # Removing the individual flagged files after merging
-                  fi
-              done
-          else
-              # Renaming the first flagged file as the main flagged data file
-              mv flags/*.csv flags/flagged_data.csv
-          fi
-
-      - name: Commit flagged data
-        run: |
-          git config --local user.name "Domingos de Eulária Dumba"
-          git config --local user.email "domingosdeeulariadumba@gmail.com"
-          
-          # Check if the flagged_data.csv file exists and is not empty
-          if [[ -s flags/flagged_data.csv ]]; then
-              git add flags/flagged_data.csv
-              git commit -m "Update flagged data" || echo "No changes to commit"
-          else
-              echo "No changes to commit"
-          fi
-
-      - name: Push changes
-        run: |
-          git push origin main || echo "Failed to push changes"
+- name: Push changes
+  run: |
+    if git push origin main; then
+        echo "Changes pushed successfully."
+    else
+        echo "Failed to push changes."
+    fi
