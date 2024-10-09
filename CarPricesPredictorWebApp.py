@@ -11,11 +11,11 @@ import joblib as jbl
 import gradio as gr
 import urllib
 import os
-from flask import Flask, jsonify
-from threading import Thread
+import flask
+import threading
 
 # Initialize Flask app
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 # File containing the preprocessed dataset
 path = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
@@ -90,9 +90,9 @@ os.makedirs(flagging_dir, exist_ok = True)
 def get_flags():
     try:
         flags = os.listdir(flagging_dir)  # Listing all files in the flags directory
-        return jsonify(flags)  # Returning the list of files as JSON
+        return flask.jsonify(flags)  # Returning the list of files as JSON
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return flask.jsonify({"error": str(e)}), 500
 
 # Assigning the Gradio interface labels of the web application
 car_prices_predictor = gr.Interface(fn=predict_car_price, 
@@ -110,7 +110,7 @@ def launch_gradio():
 if __name__ == '__main__':
     
     # Starting Gradio App in a separate thread
-    Thread(target = launch_gradio).start()
+    threading.Thread(target = launch_gradio).start()
     
-    # Start the Flask app
+    # Starting the Flask app
     app.run(host = '0.0.0.0', port = 5000)
