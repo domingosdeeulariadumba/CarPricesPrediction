@@ -107,7 +107,7 @@ car_prices_predictor = gr.Interface(fn=predict_car_price,
                                      description='Welcome to this car selling price predictor. Please, fill the fields below accordingly!', 
                                      inputs=[year, make, transmission, condition, odometer, color, interior, mmr], 
                                      outputs=sellingprice, title='Car Selling Price Predictor', 
-                                     allow_flagging='auto', flagging_dir=flagging_dir,
+                                     flagging_mode = 'auto', flagging_dir=flagging_dir,
                                      theme='soft')
 
 # Function to launch Gradio in a separate thread
