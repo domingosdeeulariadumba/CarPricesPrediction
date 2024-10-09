@@ -2,7 +2,7 @@ name: Push Flagged Data
 
 on:
   schedule:
-    - cron: '* * * * *'  # To run this action every minute
+    - cron: '* * * * *'  # Running this action every minute
   workflow_dispatch:  # Allowing manual trigger from the GitHub UI
 
 jobs:
@@ -14,14 +14,29 @@ jobs:
 
       - name: Copy flagged data
         run: |
-          mkdir -p flags         
-          scp -i private_key -r deploy@carpricesprediction.onrender.com:~/flags/* flags/ || echo "No flagged data to copy."
+          mkdir -p flags
+          # Fetching the flagged data from the Flask endpoint
+          curl -s https://carpricesprediction.onrender.com/flags | jq -r '.[]' | xargs -I {} scp -i private_key deploy@carpricesprediction.onrender.com:~/flags/{} flags/ || echo "No flagged data to copy."
+
+          # Merging flagged data into a single file
+          if [ -f flags/flagged_data.csv ]; then
+              # Appending new data to the existing file
+              for file in flags/*.csv; do
+                  if [ "$file" != "flags/flagged_data.csv" ]; then
+                      cat "$file" >> flags/flagged_data.csv
+                      rm "$file"  # Removing the individual flagged files after merging
+                  fi
+              done
+          else
+              # Renaming the first flagged file as the main flagged data file
+              mv flags/*.csv flags/flagged_data.csv
+          fi
 
       - name: Commit flagged data
         run: |
           git config --local user.name "Domingos de Eulária Dumba"
           git config --local user.email "domingosdeeulariadumba@gmail.com"
-          git add flags/*
+          git add flags/flagged_data.csv
           git commit -m "Update flagged data" || echo "No changes to commit"
 
       - name: Push changes
