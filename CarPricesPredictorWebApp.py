@@ -93,6 +93,14 @@ def get_flags():
         return flask.jsonify(flags)  # Returning the list of files as JSON
     except Exception as e:
         return flask.jsonify({"error": str(e)}), 500
+    
+# Flask endpoint to serve a specific flagged file
+@app.route('/flags/<filename>', methods = ['GET'])
+def serve_flagged_file(filename):
+    try:
+        return flask.send_from_directory(flagging_dir, filename)
+    except Exception as e:
+        return flask.jsonify({"error": str(e)}), 500
 
 # Assigning the Gradio interface labels of the web application
 car_prices_predictor = gr.Interface(fn=predict_car_price, 
@@ -112,5 +120,5 @@ if __name__ == '__main__':
     # Starting Gradio App in a separate thread
     threading.Thread(target = launch_gradio).start()
     
-    # Starting the Flask app
+    # Start the Flask app
     app.run(host = '0.0.0.0', port = 8080)
