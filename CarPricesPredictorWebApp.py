@@ -6,73 +6,49 @@ Created on Sat Sep 14 06:03:02 2024
 """
 
 # Dependencies
-
 import pandas as pd
 import joblib as jbl
 import gradio as gr
 import urllib
 
-
 # File containing the preprocessed dataset
-
-path =  'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
-
+path = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
 file = '/car_prices_train.csv'
-
 df_prep = pd.read_csv(path + file)
 
-
-
 # Function for predictions
-
-def predict_car_price(age: int, make: str, transmission: str, condition: int, odometer: float, 
+def predict_car_price(year: int, make: str, transmission: str, condition: int, odometer: float, 
              color: str, interior: str, mmr: float) -> float:
-
-    # Dataframe witth the inputs from user
-    
-    input_data = pd.DataFrame(data=[[age, make, transmission, condition, odometer, color, interior, mmr]],
-                              columns=['age', 'make', 'transmission', 'condition', 'odometer', 'color', 'interior', 'mmr'])
-
+    # Dataframe with the inputs from the user
+    input_data = pd.DataFrame(data=[[year, make, transmission, condition, odometer, color, interior, mmr]],
+                              columns=['year', 'make', 'transmission', 'condition', 'odometer', 'color', 'interior', 'mmr'])
     
     # One Hot Encoding of the input
-    
     input_dummies = pd.get_dummies(input_data)
-
     
     # Importing the model serialized with joblib
-    
     model_path = (path + '/car_prices_ml.joblib')     
-    urllib.request.urlretrieve(url = model_path, filename = 'car_prices_ml.joblib')
+    urllib.request.urlretrieve(url=model_path, filename='car_prices_ml.joblib')
     model = jbl.load('car_prices_ml.joblib')
 
-    
-    # Atributtes used to fit the model
-    
+    # Attributes used to fit the model
     model_atributtes = model.feature_names_in_
-
     
-    # Dataframe of atributtes used to fit the model containig 0
-    
-    input_final = pd.DataFrame(0, index = [0], columns = model_atributtes)
-    
+    # Dataframe of attributes used to fit the model containing 0
+    input_final = pd.DataFrame(0, index=[0], columns=model_atributtes)
     
     # Matching the dummies columns
-    
     input_final[input_dummies.columns] = input_dummies.values
     input_final = input_final[model_atributtes]
+    input_final_array = input_final.values
 
     # Prediction result with two decimal places
-    output = round(model.predict(input_final)[0], 2)
+    output = round(model.predict(input_final_array)[0], 2)
     
     return output
 
-
 # Setting up the interface of the web app
 
-  # Inputs
-    # Convert int64 to int
-age_min = int(df_prep.age.min())
-age_max = int(df_prep.age.max())
 condition_min = int(df_prep.condition.min())
 condition_max = int(df_prep.condition.max())
 unique_makes = list(set(df_prep.make))
@@ -80,7 +56,7 @@ unique_transmission = list(set(df_prep.transmission))
 unique_color = list(set(df_prep.color))
 unique_interior = list(set(df_prep.interior))
 
-age = gr.Number(label = 'Age', value = age_min, minimum = 1)
+year = gr.Number(label = 'Year', minimum = 0)
 make = gr.Dropdown(label = 'Make', choices = unique_makes)
 transmission = gr.Dropdown(label = 'Transmission', choices = unique_transmission)
 condition = gr.Slider(label = 'Condition', minimum = condition_min, maximum = condition_max, step = 1, interactive = True)
@@ -89,21 +65,15 @@ color = gr.Dropdown(label = 'Color', choices = unique_color)
 interior = gr.Dropdown(label = 'Interior Color', choices = unique_interior)
 mmr = gr.Number(label = 'Manheim Market Report')
 
-
 # Outputs
+sellingprice = gr.Number(label='Selling Price')
 
-sellingprice = gr.Number(label = 'Selling Price')
-
-
-# Assigning the gradio interface labels of the web application
-
+# Assigning the Gradio interface labels of the web application
 car_prices_predictor = gr.Interface(fn = predict_car_price, 
-                       description = 'Welcome to this selling price predictor. Please, fill the fields below accordingly!', 
-                       inputs = [age, make, transmission, condition, odometer, color, interior, mmr], 
+                       description = 'Welcome to this car selling price predictor. Please, fill the fields below accordingly!', 
+                       inputs = [year, make, transmission, condition, odometer, color, interior, mmr], 
                        outputs = sellingprice, title = 'Car Selling Price Predictor', allow_flagging = 'auto', 
                        theme = 'soft')
 
-
 # Launching the web application for making predictions
-
 car_prices_predictor.launch(server_name = '0.0.0.0', server_port = 80)
