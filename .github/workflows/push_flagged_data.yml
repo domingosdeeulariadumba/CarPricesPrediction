@@ -18,6 +18,8 @@ jobs:
           # Fetching the flagged data from the Flask endpoint on Render
           flagged_files=$(curl -s https://carpricesprediction.onrender.com/flags | jq -r '.[]')
           
+          echo "Flagged files: $flagged_files"
+          
           if [ -n "$flagged_files" ]; then
               # Loop through each flagged file and download it
               for file in $flagged_files; do
@@ -45,8 +47,16 @@ jobs:
         run: |
           git config --local user.name "Domingos de Eulária Dumba"
           git config --local user.email "domingosdeeulariadumba@gmail.com"
-          git add flags/flagged_data.csv
-          git commit -m "Update flagged data" || echo "No changes to commit"
+          
+          # Check if the flagged_data.csv file exists and is not empty
+          if [[ -s flags/flagged_data.csv ]]; then
+              git add flags/flagged_data.csv
+              git commit -m "Update flagged data"
+          else
+              echo "No changes to commit"
+          fi
 
       - name: Push changes
         run: git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
