@@ -16,12 +16,12 @@ jobs:
         run: |
           mkdir -p flags
           # Fetching the flagged data from the Flask endpoint
-          flagged_files=$(curl -s https://carpricesprediction.onrender.com/flags | jq -r '.[]')
+          flagged_files=$(curl -s http://127.0.0.1:8080/flags | jq -r '.[]')
           
           if [ -n "$flagged_files" ]; then
               # Loop through each flagged file and download it
               for file in $flagged_files; do
-                  curl -s https://carpricesprediction.onrender.com/flags/$file -o flags/$file
+                  curl -s http://127.0.0.1:8080/flags/$file -o flags/$file
               done
           else
               echo "No flagged data to copy."
