@@ -12,11 +12,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Copy flagged data
+      - name: Copy flagged data via HTTP
         run: |
           mkdir -p flags
           # Fetching the flagged data from the Flask endpoint
-          curl -s https://carpricesprediction.onrender.com/flags | jq -r '.[]' | xargs -I {} scp -i private_key deploy@carpricesprediction.onrender.com:~/flags/{} flags/ || echo "No flagged data to copy."
+          flagged_files=$(curl -s https://carpricesprediction.onrender.com/flags | jq -r '.[]')
+          
+          if [ -n "$flagged_files" ]; then
+              # Loop through each flagged file and download it
+              for file in $flagged_files; do
+                  curl -s https://carpricesprediction.onrender.com/flags/$file -o flags/$file
+              done
+          else
+              echo "No flagged data to copy."
+          fi
 
           # Merging flagged data into a single file
           if [ -f flags/flagged_data.csv ]; then
