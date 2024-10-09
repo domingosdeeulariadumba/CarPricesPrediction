@@ -74,20 +74,46 @@ def predict_car_price(year: int, make: str, transmission: str, condition: int,
 
 # Setting up the interface of the web app
 
+    # Range values
 condition_min = int(df_prep.condition.min())
 condition_max = int(df_prep.condition.max())
+    
+    # Choices
 unique_makes = list(set(df_prep.make))
 unique_transmission = list(set(df_prep.transmission))
 unique_color = list(set(df_prep.color))
 unique_interior = list(set(df_prep.interior))
-year = gr.Number(label = 'Year', minimum = 1885)
-make = gr.Dropdown(label = 'Make', choices = unique_makes)
-transmission = gr.Dropdown(label = 'Transmission', choices = unique_transmission)
-condition = gr.Slider(label = 'Condition', minimum = condition_min, maximum = condition_max, step = 1, interactive = True)
-odometer = gr.Number(label = 'Odometer')
-color = gr.Dropdown(label = 'Color', choices = unique_color)
-interior = gr.Dropdown(label = 'Interior Color', choices = unique_interior)
-mmr = gr.Number(label = 'Manheim Market Report')
+
+    # Default values
+mode_color = df_prep.color.value_counts().index[0]
+mode_make = df_prep.make.value_counts().index[0]
+mode_transmission = df_prep.transmission.value_counts().index[0]
+mode_interior = df_prep.interior.value_counts().index[0]
+mean_mmr = df_prep.mmr.mean()
+
+    # Filling the field values
+year = gr.Number(label = 'Year', minimum = 1885,
+                 description = 'Enter the manufacturing year of the car. (e.g., 2020)')
+make = gr.Dropdown(label = 'Make', choices = unique_makes, 
+                   value = mode_make,
+                   description = 'Select the manufacturer of the car (e.g., Ford, Toyota).')
+transmission = gr.Dropdown(label = 'Transmission', choices = unique_transmission,
+                           value = mode_transmission,
+                           description = 'Choose the type of transmission (e.g., Automatic, Manual).')
+condition = gr.Slider(label = 'Condition', minimum = condition_min, 
+                      maximum = condition_max, step = 1, interactive = True,
+                      description = 'Select the condition of the car (1 = Poor, 49 = Excellent).')
+
+odometer = gr.Number(label = 'Odometer', minimum = 0, 
+                     description = 'Enter the total kilometers driven by the car.')
+color = gr.Dropdown(label = 'Color', choices = unique_color, 
+                    value = mode_color, 
+                    description = 'Select the color of the car.')
+interior = gr.Dropdown(label = 'Interior Color', choices = unique_interior,
+                       value = mode_interior,
+                       description = 'Select the color of the car’s interior.')
+mmr = gr.Number(label = 'Manheim Market Report', value = mean_mmr,
+                description = 'Enter the market report value for the car.')
 
 
 # Outputs
@@ -98,7 +124,7 @@ sellingprice = gr.Number(label='Selling Price')
 # Assigning the Gradio interface labels of the web application
 
 car_prices_predictor = gr.Interface(fn = predict_car_price, 
-                       description = 'Welcome to this car selling price predictor. Please, fill the fields below accordingly!', 
+                       description = 'Hello! 👋🏿 \nWelcome to this car selling price predictor. Please, fill the fields below accordingly!', 
                        inputs = [year, make, transmission, condition, odometer, color, interior, mmr], 
                        outputs = sellingprice, title = 'Car Selling Price Predictor', 
                        flagging_mode = 'auto', theme = 'soft')
