@@ -132,4 +132,4 @@ car_prices_predictor = gr.Interface(fn = predict_car_price,
 
 # Launching the web application for making predictions
 
-car_prices_predictor.launch()
+car_prices_predictor.launch(server_name = '0.0.0.0')
