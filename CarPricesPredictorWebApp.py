@@ -93,27 +93,27 @@ mean_mmr = df_prep.mmr.mean()
 
     # Filling the field values
 year = gr.Number(label = 'Year', minimum = 1885,
-                 description = 'Enter the manufacturing year of the car. (e.g., 2020)')
+                 info = 'Enter the manufacturing year of the car. (e.g., 2020)')
 make = gr.Dropdown(label = 'Make', choices = unique_makes, 
                    value = mode_make,
-                   description = 'Select the manufacturer of the car (e.g., Ford, Toyota).')
+                   info = 'Select the manufacturer of the car (e.g., Ford, Toyota).')
 transmission = gr.Dropdown(label = 'Transmission', choices = unique_transmission,
                            value = mode_transmission,
-                           description = 'Choose the type of transmission (e.g., Automatic, Manual).')
+                           info = 'Choose the type of transmission (e.g., Automatic, Manual).')
 condition = gr.Slider(label = 'Condition', minimum = condition_min, 
                       maximum = condition_max, step = 1, interactive = True,
-                      description = 'Select the condition of the car (1 = Poor, 49 = Excellent).')
+                      info = 'Select the condition of the car (1 = Poor, 49 = Excellent).')
 
 odometer = gr.Number(label = 'Odometer', minimum = 0, 
-                     description = 'Enter the total kilometers driven by the car.')
+                     info = 'Enter the total kilometers driven by the car.')
 color = gr.Dropdown(label = 'Color', choices = unique_color, 
                     value = mode_color, 
-                    description = 'Select the color of the car.')
+                    info = 'Select the color of the car.')
 interior = gr.Dropdown(label = 'Interior Color', choices = unique_interior,
                        value = mode_interior,
-                       description = 'Select the color of the car’s interior.')
+                       info = 'Select the color of the car’s interior.')
 mmr = gr.Number(label = 'Manheim Market Report', value = mean_mmr,
-                description = 'Enter the market report value for the car.')
+                info = 'Enter the market report value for the car.')
 
 
 # Outputs
@@ -127,7 +127,7 @@ car_prices_predictor = gr.Interface(fn = predict_car_price,
                        description = 'Hello! 👋🏿 \nWelcome to this car selling price predictor. Please, fill the fields below accordingly!', 
                        inputs = [year, make, transmission, condition, odometer, color, interior, mmr], 
                        outputs = sellingprice, title = 'Car Selling Price Predictor', 
-                       flagging_mode = 'auto', theme = 'soft')
+                       allow_flagging = 'auto', theme = 'soft')
 
 
 # Launching the web application for making predictions
