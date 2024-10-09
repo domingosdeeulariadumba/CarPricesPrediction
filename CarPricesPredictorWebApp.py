@@ -56,7 +56,7 @@ unique_transmission = list(set(df_prep.transmission))
 unique_color = list(set(df_prep.color))
 unique_interior = list(set(df_prep.interior))
 
-year = gr.Number(label = 'Year', minimum = 0)
+year = gr.Number(label = 'Year', minimum = 1885)
 make = gr.Dropdown(label = 'Make', choices = unique_makes)
 transmission = gr.Dropdown(label = 'Transmission', choices = unique_transmission)
 condition = gr.Slider(label = 'Condition', minimum = condition_min, maximum = condition_max, step = 1, interactive = True)
