@@ -17,7 +17,7 @@ main_url = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPr
 
 # File containing the preprocessed dataset
 db_url = main_url + '/CarPricesPreprocessedDatabase.db'
-urllib.request.urlretrieve(url = db_url, file_name = 'CarPricesPreprocessedDatabase.db')
+urllib.request.urlretrieve(url = db_url, filename = 'CarPricesPreprocessedDatabase.db')
 
 # Reading the preprocessed data a pandas dataframe
 conn = sqlite3.connect('CarPricesPreprocessedDatabase.db')
