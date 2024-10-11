@@ -21,6 +21,9 @@ conn = sqlite3.connect(path + file)
 query = 'SELECT * FROM CarPrices'
 df_prep = pd.read_sql(query, conn)
 
+# Closing the connection
+conn.close()
+
 # Importing the model serialized with joblib
 model_path = (path + '/CarPricesPredictionModel.joblib')     
 urllib.request.urlretrieve(url = model_path, filename = 'CarPricesPredictionModel.joblib')
