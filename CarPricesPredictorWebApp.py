@@ -12,11 +12,15 @@ import gradio as gr
 import urllib
 import sqlite3
 
+# Repository main url
+main_url = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
+
 # File containing the preprocessed dataset
-db_file = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main/CarPricesPreprocessedDatabase.db'
+db_url = main_url + '/CarPricesPreprocessedDatabase.db'
+urllib.request.urlretrieve(url = db_url, file_name = 'CarPricesPreprocessedDatabase.db')
 
 # Reading the preprocessed data a pandas dataframe
-conn = sqlite3.connect(db_file)
+conn = sqlite3.connect('CarPricesPreprocessedDatabase.db')
 query = 'SELECT * FROM CarPrices'
 df_prep = pd.read_sql(query, conn)
 
@@ -24,8 +28,8 @@ df_prep = pd.read_sql(query, conn)
 conn.close()
 
 # Importing the model serialized with joblib
-model_path = db_file.replace('CarPricesPreprocessedDatabase.db', 'CarPricesPredictionModel.joblib')     
-urllib.request.urlretrieve(url = model_path, filename = 'CarPricesPredictionModel.joblib')
+model_url = main_url + '/CarPricesPredictionModel.joblib'     
+urllib.request.urlretrieve(url = model_url, filename = 'CarPricesPredictionModel.joblib')
 model = jbl.load('CarPricesPredictionModel.joblib')
 
 # Function for predictions
