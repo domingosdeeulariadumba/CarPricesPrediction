@@ -13,11 +13,10 @@ import urllib
 import sqlite3
 
 # File containing the preprocessed dataset
-path = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
-file = '/CarPricesPreprocessedDatabase.db'
+db_file = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main/CarPricesPreprocessedDatabase.db'
 
 # Reading the preprocessed data a pandas dataframe
-conn = sqlite3.connect(path + file)
+conn = sqlite3.connect(db_file)
 query = 'SELECT * FROM CarPrices'
 df_prep = pd.read_sql(query, conn)
 
@@ -25,7 +24,7 @@ df_prep = pd.read_sql(query, conn)
 conn.close()
 
 # Importing the model serialized with joblib
-model_path = (path + '/CarPricesPredictionModel.joblib')     
+model_path = (db_file.replace('CarPricesPreprocessedDatabase.db', 'CarPricesPredictionModel.joblib')     
 urllib.request.urlretrieve(url = model_path, filename = 'CarPricesPredictionModel.joblib')
 model = jbl.load('CarPricesPredictionModel.joblib')
 
