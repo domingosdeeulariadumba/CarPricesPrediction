@@ -10,21 +10,16 @@ import pandas as pd
 import joblib as jbl
 import gradio as gr
 import urllib
-import rarfile
+import sqlite3
 
 # File containing the preprocessed dataset
 path = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
-file = '/CarPricesPreprocessedDataset.rar'
+file = '/CarPricesPreprocessedDatabase.db'
 
-# Downloading the .rar file containing the preprocessed dataset
-urllib.request.urlretrieve(path + file, 'CarPricesPreprocessedDataset.rar')
-
-# Extracting the  preprocessed dataset .rar file
-with rarfile.RarFile('CarPricesPreprocessedDataset.rar') as rf:
-    rf.extractall()
-
-# Reading the preprocessed dataset .csv file as a pandas dataframe
-df_prep = pd.read_csv('CarPricesPreprocessedDataset.csv')
+# Reading the preprocessed data a pandas dataframe
+conn = sqlite3.connect(path + file)
+query = 'SELECT * FROM CarPrices'
+df_prep = pd.read_sql(query, conn)
 
 # Importing the model serialized with joblib
 model_path = (path + '/CarPricesPredictionModel.joblib')     
