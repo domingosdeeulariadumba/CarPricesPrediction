@@ -24,7 +24,7 @@ df_prep = pd.read_sql(query, conn)
 conn.close()
 
 # Importing the model serialized with joblib
-model_path = (db_file.replace('CarPricesPreprocessedDatabase.db', 'CarPricesPredictionModel.joblib')     
+model_path = db_file.replace('CarPricesPreprocessedDatabase.db', 'CarPricesPredictionModel.joblib')     
 urllib.request.urlretrieve(url = model_path, filename = 'CarPricesPredictionModel.joblib')
 model = jbl.load('CarPricesPredictionModel.joblib')
 
