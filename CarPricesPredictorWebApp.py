@@ -12,7 +12,6 @@ import gradio as gr
 import urllib
 import rarfile
 
-
 # File containing the preprocessed dataset
 path = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
 file = '/CarPricesPreprocessedDataset.rar'
@@ -62,7 +61,6 @@ def predict_car_price(year: int, make: str, transmission: str, condition: int,
     output = round(model.predict(input_final_array)[0], 2)
         
     return output
-
 
 # Setting up the interface of the web app
     # Range values
