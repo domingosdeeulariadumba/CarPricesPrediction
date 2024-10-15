@@ -27,6 +27,11 @@ df_prep = pd.read_sql(query, conn)
 # Closing the connection
 conn.close()
 
+# Importing the model serialized with joblib
+model_url = main_url + '/CarPricesPredictionModel.joblib'     
+urllib.request.urlretrieve(url = model_url, filename = 'CarPricesPredictionModel.joblib')
+model = jbl.load('CarPricesPredictionModel.joblib')
+
 # Function for predictions
 def predict_car_price(year: int, make: str, transmission: str, condition: int,
                       odometer: float, color: str, 
@@ -42,10 +47,7 @@ def predict_car_price(year: int, make: str, transmission: str, condition: int,
     # One Hot Encoding of the input    
     input_dummies = pd.get_dummies(input_data)
         
-    # Importing the model serialized with joblib to get the attributes used during the ML pipeline
-    model_url = main_url + '/CarPricesPredictionModel.joblib'     
-    urllib.request.urlretrieve(url = model_url, filename = 'CarPricesPredictionModel.joblib')
-    model = jbl.load('CarPricesPredictionModel.joblib')
+    # Attributes used to fit the model    
     model_atributtes = model.feature_names_in_
         
     # Dataframe of attributes used to fit the model containing 0    
