@@ -56,10 +56,9 @@ def predict_car_price(year: int, make: str, transmission: str, condition: int,
     # Matching the dummies columns    
     input_final[input_dummies.columns] = input_dummies.values
     input_final = input_final[model_atributtes]
-    input_final_array = input_final.values
 
     # Prediction result with two decimal places    
-    output = round(model.predict(input_final_array)[0], 2)
+    output = round(model.predict(input_final)[0], 2)
         
     return output
 
