@@ -48,7 +48,7 @@ def predict_car_price(year: int, make: str, transmission: str, condition: int,
     input_dummies = pd.get_dummies(input_data)
         
     # Attributes used to fit the model    
-    model_atributtes = model.feature_names_in_
+    model_atributtes = model.named_steps['regressor'].feature_names_in_
         
     # Dataframe of attributes used to fit the model containing 0    
     input_final = pd.DataFrame(0, index=[0], columns=model_atributtes)
