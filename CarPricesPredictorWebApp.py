@@ -51,7 +51,7 @@ def predict_car_price(year: int, make: str, transmission: str, condition: int,
     model_atributtes = model.feature_names_in_
         
     # Dataframe of attributes used to fit the model containing 0    
-    input_final = pd.DataFrame(0, index=[0], columns=model_atributtes)
+    input_final = pd.DataFrame(0, index=[0], columns = model_atributtes)
         
     # Matching the dummies columns    
     input_final[input_dummies.columns] = input_dummies.values
