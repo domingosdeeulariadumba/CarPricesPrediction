@@ -232,27 +232,3 @@ def eval_class(candidate_models, X_train, y_train):
     eval_data = (df_scores, best_model_pipeline)
 
     return eval_data
-
-
-# Function for retrieving confusion matrix and AUC-ROC
-def show_full_report(X_test, y_test, y_pred):
-
-    '''
-    Show the full report of classification metrics.
-    Parameters:
-        X_test (DataFrame): Testing features.
-        y_test (Series): True labels for the test set.
-        y_pred (array): Predicted labels.
-
-    Returns:
-        DataFrame: Scores of classification metrics.
-    '''
-    
-    precision, recall = precision_score(y_test, y_pred), recall_score(y_test, y_pred)
-    accuracy, f1 = accuracy_score(y_test, y_pred), f1_score(y_test, y_pred)
-    auc_roc = roc_auc_score(y_test, y_pred)
-
-    df_score = pd.DataFrame({'Score': [precision, recall, accuracy, f1, auc_roc]},
-             index = ['Precision', 'Recall', 'Accuracy', 'F1 Score', 'AUC ROC']).T
-    
-    return df_score
