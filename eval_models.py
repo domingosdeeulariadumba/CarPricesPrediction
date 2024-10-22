@@ -184,21 +184,25 @@ def eval_class(candidate_models, X_train, y_train):
             dict_scores[model_name] = scores.mean()
         else:
             # Parameters setup
+                ## Tree-Based Models
             tree_depths, min_imp_decs = [3, 5, 7], [0.001, 0.01, 0.1]     
             param_tree = {'classifier__max_depth': tree_depths,
                          'classifier__min_impurity_decrease': min_imp_decs}    
-            param_forest = {'classifier__max_depth': tree_depths}   
-            svm_pipeline = Pipeline(steps = [step for i, step
-                                                 in enumerate(model_pipeline.steps) if i != 0])
-            param_svm = {'classifier__kernel': ['linear', 'poly', 'rbf',
-                                                'sigmoid'],
-                'classifier__C': [0.1, 1, 10, 100]}
+            param_forest = {'classifier__max_depth': tree_depths}
             param_xgb = {'classifier__lambda': [0.1, 1, 10],
                               'classifier__alpha': [0.1, 1, 10],
                               'classifier__learning_rate': [0.1, 0.2, 0.3],
                               'classifier__max_depth': tree_depths,
-                              'classifier__gamma': [0, 0.1, 0.2, 0.5, 1]}  
-            param_dist = {
+                              'classifier__gamma': [0, 0.1, 0.2, 0.5, 1]}
+            
+                ## Distance-Based Models
+            dist_pipeline = Pipeline(steps = [step for i, step
+                                                 in enumerate(model_pipeline.steps) if i != 0])
+            param_svm = {'classifier__kernel': ['linear', 'poly', 'rbf',
+                                                'sigmoid'],
+                'classifier__C': [0.1, 1, 10, 100]}
+              
+            param_knn = {
                 'classifier__n_neighbors': [1, 2, 3, 5, 7, 9, 11, 13, 15],
                 'classifier__weights': ['uniform', 'distance'],
                 'classifier__metric': ['minkowski']
@@ -207,11 +211,11 @@ def eval_class(candidate_models, X_train, y_train):
             if model_name == 'Decision Tree':
                 param_grid_, model_pipeline = param_tree, model_pipeline
             elif model_name == 'SVM':
-                param_grid_, model_pipeline = param_svm, svm_pipeline
+                param_grid_, model_pipeline = param_svm, dist_pipeline
             elif model_name == 'XGB':
                 param_grid_, model_pipeline = param_xgb, model_pipeline
             elif model_name == 'KNN':
-                param_grid_, model_pipeline = param_dist, svm_pipeline                      
+                param_grid_, model_pipeline = param_knn, dist_pipeline                      
             else:
                 param_grid_, model_pipeline = param_forest, model_pipeline 
                 
@@ -244,7 +248,7 @@ def eval_class(candidate_models, X_train, y_train):
 
     # Building the best model pipeline with a valid feature reduction strategy
     if best_model_name in ('SVM', 'KNN'):
-        best_model_pipeline = svm_pipeline         
+        best_model_pipeline = dist_pipeline         
     else:     
         best_model_pipeline = Pipeline(steps = [
             best_feat_red_strategy_step,
