@@ -243,7 +243,7 @@ def eval_class(candidate_models, X_train, y_train):
                                        RFE(best_model_instance))
 
     # Building the best model pipeline with a valid feature reduction strategy
-    if best_model_name == 'SVM':
+    if best_model_name in ('SVM', 'KNN'):
         best_model_pipeline = svm_pipeline         
     else:     
         best_model_pipeline = Pipeline(steps = [
