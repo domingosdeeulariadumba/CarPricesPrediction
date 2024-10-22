@@ -197,13 +197,21 @@ def eval_class(candidate_models, X_train, y_train):
                               'classifier__alpha': [0.1, 1, 10],
                               'classifier__learning_rate': [0.1, 0.2, 0.3],
                               'classifier__max_depth': tree_depths,
-                              'classifier__gamma': [0, 0.1, 0.2, 0.5, 1]}            
+                              'classifier__gamma': [0, 0.1, 0.2, 0.5, 1]}  
+            param_dist = {
+                'classifier__n_neighbors': [1, 2, 3, 5, 7, 9, 11, 13, 15],
+                'classifier__weights': ['uniform', 'distance'],
+                'classifier__metric': ['minkowski']
+}
+            
             if model_name == 'Decision Tree':
                 param_grid_, model_pipeline = param_tree, model_pipeline
             elif model_name == 'SVM':
                 param_grid_, model_pipeline = param_svm, svm_pipeline
             elif model_name == 'XGB':
-                param_grid_, model_pipeline = param_xgb, model_pipeline                       
+                param_grid_, model_pipeline = param_xgb, model_pipeline
+            elif model_name == 'KNN':
+                param_grid_, model_pipeline = param_dist, svm_pipeline                      
             else:
                 param_grid_, model_pipeline = param_forest, model_pipeline 
                 
