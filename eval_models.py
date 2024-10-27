@@ -35,7 +35,7 @@ def eval_reg(candidate_models, X_train, y_train):
     # Function to retrieve the appropriate feature reduction
     def feat_red_strategy(X_train):
         
-        if X_train.shape[1] > 99:
+        if (X_train.shape[1] > 99) or (X_train.shape[1]/X_train.shape[0] > 0.1):
             pca = PCA().fit(X_train)   
             n_comp = np.argmax(pca.explained_variance_ratio_.cumsum() >= 0.95) + 1
             return 'pca', PCA(n_components = n_comp)
@@ -150,7 +150,7 @@ def eval_class(candidate_models, X_train, y_train):
     # Function to retrieve the appropriate feature reduction
     def feat_red_strategy(X_train):
         
-        if X_train.shape[1] > 99:
+        if (X_train.shape[1] > 99) or (X_train.shape[1]/X_train.shape[0] > 0.1):
             pca = PCA().fit(X_train)   
             n_comp = np.argmax(pca.explained_variance_ratio_.cumsum() >= 0.95) + 1
             return 'pca', PCA(n_components = n_comp)
