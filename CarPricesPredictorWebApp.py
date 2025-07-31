@@ -11,6 +11,7 @@ import joblib as jbl
 import gradio as gr
 import sqlite3
 import urllib
+import os
 
 # Repository main url
 main_url = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
@@ -112,4 +113,5 @@ car_prices_predictor = gr.Interface(fn = predict_price,
                        outputs = sellingprice, 
                        title = 'Car Selling Price Predictor', 
                        allow_flagging = 'auto', theme = 'soft')
-car_prices_predictor.launch(server_name = '0.0.0.0')
+port = int(os.environ.get('PORT', 7860))
+car_prices_predictor.launch(server_name = '0.0.0.0', server_port=port)
