@@ -44,7 +44,7 @@ def predict_price(
     # Passing input data as a Pandas DataFrame and prediction    
     input_data = pd.DataFrame([[
         age, make, transmission.lower(), condition, 
-        odometer, color.title(), interior.title(), mmr
+        odometer, color.lower(), interior.lower(), mmr
         ]], 
         columns = model.feature_names_in_
         )
