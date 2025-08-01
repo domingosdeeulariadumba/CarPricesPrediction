@@ -96,7 +96,7 @@ mean_mmr = int(conn.execute('SELECT AVG(mmr) FROM CarPrices').fetchone()[0])
 conn.close()
 
     # Filling the field values
-age = gr.Number(label = 'Year', minimum = 0)
+age = gr.Number(label = 'Age', minimum = 0)
 make = gr.Dropdown(label = 'Make', choices = unique_makes, value = mode_make)
 transmission = gr.Dropdown(
     label = 'Transmission', 
