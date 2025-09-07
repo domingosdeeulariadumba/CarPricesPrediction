@@ -20,7 +20,11 @@ main_url = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPr
 db_url = main_url + '/CarPricesPreprocessedDatabase.db'
 urllib.request.urlretrieve(url = db_url, filename = 'CarPricesPreprocessedDatabase.db')
 
+<<<<<<< HEAD
 # Establishing a connection to the database
+=======
+# Reading the preprocessed data as a pandas DataFrame
+>>>>>>> 61b1c30c36f196ab0dc1da4034f9c0ab2f74ae14
 conn = sqlite3.connect('CarPricesPreprocessedDatabase.db')
 
 # Importing the serialized model
@@ -125,6 +129,7 @@ sellingprice = gr.Number(label = 'Selling Price')
 # Launching the web application for making predictions
 description = 'Hello! 👋🏿 Welcome to this car selling price predictor. Please,' \
                 ' fill the fields below accordingly!'
+<<<<<<< HEAD
 car_prices_predictor = gr.Interface(
     fn = predict_price, 
     description = description,
@@ -134,5 +139,16 @@ car_prices_predictor = gr.Interface(
     allow_flagging = 'auto',
     theme = 'soft'
     )
+=======
+car_prices_predictor = gr.Interface(fn = predict_price, 
+                       description = description,
+                       inputs = [
+                           age, make, transmission, condition, 
+                           odometer, color, interior, mmr
+                           ], 
+                       outputs = sellingprice, 
+                       title = 'Car Selling Price Predictor', 
+                       allow_flagging = 'auto', theme = 'soft')
+>>>>>>> 61b1c30c36f196ab0dc1da4034f9c0ab2f74ae14
 port = int(os.environ.get('PORT', 7860))
 car_prices_predictor.launch(server_name = '0.0.0.0', server_port = port)
