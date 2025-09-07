@@ -9,8 +9,9 @@ Created on Sat Sep 14 06:03:02 2024
 import pandas as pd
 import joblib as jbl
 import gradio as gr
-import urllib
 import sqlite3
+import urllib
+import os
 
 # Repository main url
 main_url = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPrediction/main'
@@ -19,89 +20,119 @@ main_url = 'https://raw.githubusercontent.com/domingosdeeulariadumba/CarPricesPr
 db_url = main_url + '/CarPricesPreprocessedDatabase.db'
 urllib.request.urlretrieve(url = db_url, filename = 'CarPricesPreprocessedDatabase.db')
 
-# Reading the preprocessed data a pandas dataframe
+# Establishing a connection to the database
 conn = sqlite3.connect('CarPricesPreprocessedDatabase.db')
-query = 'SELECT * FROM CarPrices'
-df_prep = pd.read_sql(query, conn)
 
-# Closing the connection
-conn.close()
-
-# Importing the model serialized with joblib
+# Importing the serialized model
 model_url = main_url + '/CarPricesPredictionModel.joblib'     
 urllib.request.urlretrieve(url = model_url, filename = 'CarPricesPredictionModel.joblib')
 model = jbl.load('CarPricesPredictionModel.joblib')
 
-# Function for predictions
-def predict_car_price(year: int, make: str, transmission: str, condition: int,
-                      odometer: float, color: str, 
-                      interior: str, mmr: float) -> float:
-        
-    # Dataframe with the inputs from the user    
-    input_data = pd.DataFrame(data=[[year, make, transmission, condition, 
-                                     odometer, color, interior, mmr]],
-                              columns=['year', 'make', 'transmission',
-                                       'condition', 'odometer', 'color',
-                                       'interior', 'mmr'])
-                        
-    # One Hot Encoding of the input    
-    input_dummies = pd.get_dummies(input_data)
-        
-    # Attributes used to fit the model    
-    model_atributtes = model.feature_names_in_
-        
-    # Dataframe of attributes used to fit the model containing 0    
-    input_final = pd.DataFrame(0, index=[0], columns = model_atributtes)
-        
-    # Matching the dummies columns    
-    input_final[input_dummies.columns] = input_dummies.values
-    input_final = input_final[model_atributtes]
 
-    # Prediction result with two decimal places    
-    output = round(model.predict(input_final)[0], 2)
+# Function for predictions
+def predict_price(
+        age: int, make: str, transmission: str,  condition: int,
+        odometer: float, color: str,  interior: str, mmr: float
+       ) -> float:
+    
+    # Mapping the condition score input to its corresponding class
+    scores = range(1, 6)
+    classes = ['poor', 'rough', 'average', 'good', 'excellent']
+    dict_condition = dict(zip(scores, classes))
+    condition = dict_condition[condition]
+    
+    # Passing input data as a Pandas DataFrame and prediction    
+    input_data = pd.DataFrame([[
+        age, make, transmission.lower(), condition, 
+        odometer, color.lower(), interior.lower(), mmr
+        ]], 
+        columns = model.feature_names_in_
+        )
+    output = round(model.predict(input_data).max(), 2)
         
     return output
 
-# Setting up the interface of the web app
-    # Range values
-condition_min = int(df_prep.condition.min())
-condition_max = int(df_prep.condition.max())    
+
+
+# Setting up the interface of the web app     
     # Choices
-unique_makes = list(set(df_prep.make))
-unique_transmission = list(set(df_prep.transmission))
-unique_color = list(set(df_prep.color))
-unique_interior = list(set(df_prep.interior))
+def query_unique(feature):
+    unique = [
+        i[0] for i in  
+        conn.execute(
+            f'''
+            SELECT DISTINCT {feature} 
+            FROM CarPrices
+            '''
+            ).fetchall()
+        ]
+    return unique
+
+unique_makes = query_unique('make')
+unique_transmission = list(map(lambda t: t.title(), query_unique('transmission')))
+unique_color = list(map(lambda c: c.title(), query_unique('color')))
+unique_interior = list(map(lambda i: i.title(), query_unique('interior')))
+
     # Default values
-mode_color = df_prep.color.value_counts().index[0]
-mode_make = df_prep.make.value_counts().index[0]
-mode_transmission = df_prep.transmission.value_counts().index[0]
-mode_interior = df_prep.interior.value_counts().index[0]
-mean_mmr = int(df_prep.mmr.mean())
+def query_mode(feature):    
+    mode = conn.execute(
+        f'''
+        SELECT {feature}, COUNT(*) as count
+        FROM CarPrices
+        GROUP BY {feature}
+        ORDER BY count DESC
+        LIMIT 1
+        '''
+        ).fetchone()[0]
+    return mode    
+    
+mode_color = query_mode('color').title()
+mode_make = query_mode('make')
+mode_transmission = query_mode('transmission').title()
+mode_interior = query_mode('interior').title()
+mean_mmr = int(conn.execute('SELECT AVG(mmr) FROM CarPrices').fetchone()[0])
+
+# Closing the database connection
+conn.close()
+
     # Filling the field values
-year = gr.Number(label = 'Year', minimum = 1885)
-make = gr.Dropdown(label = 'Make', choices = unique_makes, 
-                   value = mode_make)
-transmission = gr.Dropdown(label = 'Transmission', choices = unique_transmission,
-                           value = mode_transmission)
-condition = gr.Slider(label = 'Condition', minimum = condition_min, 
-                      maximum = condition_max, step = 1, 
-                      interactive = True)
+age = gr.Number(label = 'Age', minimum = 0)
+make = gr.Dropdown(label = 'Make', choices = unique_makes, value = mode_make)
+transmission = gr.Dropdown(
+    label = 'Transmission', 
+    choices = unique_transmission,
+    value = mode_transmission
+    )
+condition = gr.Slider(
+    label = 'Condition', 
+    minimum = 1,
+    maximum = 5, 
+    step = 1,
+    interactive = True
+    )
 odometer = gr.Number(label = 'Odometer', minimum = 0)
-color = gr.Dropdown(label = 'Color', choices = unique_color, 
-                    value = mode_color)
-interior = gr.Dropdown(label = 'Interior Color', choices = unique_interior,
-                       value = mode_interior)
+color = gr.Dropdown(label = 'Color', choices = unique_color, value = mode_color)
+interior = gr.Dropdown(
+    label = 'Interior Color', 
+    choices = unique_interior,
+    value = mode_interior
+    )
 mmr = gr.Number(label = 'Manheim Market Report', value = mean_mmr)
 
-# Outputs
+# Output field
 sellingprice = gr.Number(label = 'Selling Price')
 
-# Assigning the Gradio interface labels of the web application
-car_prices_predictor = gr.Interface(fn = predict_car_price, 
-                       description = 'Hello! 👋🏿 Welcome to this car selling price predictor. Please, fill the fields below accordingly!', 
-                       inputs = [year, make, transmission, condition, odometer, color, interior, mmr], 
-                       outputs = sellingprice, title = 'Car Selling Price Predictor', 
-                       allow_flagging = 'auto', theme = 'soft')
-
 # Launching the web application for making predictions
-car_prices_predictor.launch(server_name = '0.0.0.0')
+description = 'Hello! 👋🏿 Welcome to this car selling price predictor. Please,' \
+                ' fill the fields below accordingly!'
+car_prices_predictor = gr.Interface(
+    fn = predict_price, 
+    description = description,
+    inputs = [age, make, transmission, condition, odometer, color, interior, mmr], 
+    outputs = sellingprice, 
+    title = 'Car Selling Price Predictor', 
+    allow_flagging = 'auto',
+    theme = 'soft'
+    )
+port = int(os.environ.get('PORT', 7860))
+car_prices_predictor.launch(server_name = '0.0.0.0', server_port = port)
